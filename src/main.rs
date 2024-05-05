@@ -22,8 +22,13 @@ fn main() -> Result<()> {
             let page_size = u16::from_be_bytes([header[16], header[17]]);
             println!("[Sqlite]: Running");
 
-            // Uncomment this block to pass the first stage
             println!("database page size: {}", page_size);
+
+            file.seek(std::io::SeekFrom::Start(0))?;
+            let mut body = [0; 4096];
+            file.read_exact(&mut body)?;
+
+            println!("number of tables: {}", u16::from_be_bytes([body[100 + 3], body[100 + 4]]));
         }
         _ => bail!("Missing or invalid command passed: {}", command),
     }
